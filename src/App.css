@@ -1,0 +1,13 @@
+.App {
+  text-align: center;
+}
+
+A {
+    color: #006400;
+  }
+A:visited {
+    color:  #0AB604;
+   }
+A:active {
+    color:  #006400;
+   }

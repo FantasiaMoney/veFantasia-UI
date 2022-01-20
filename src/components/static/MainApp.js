@@ -16,11 +16,15 @@ import {
 import AttachMoney from '@material-ui/icons/AttachMoney'
 import Add from '@material-ui/icons/Add'
 import AccountBox from '@material-ui/icons/AccountBox'
+import ShowChart from '@material-ui/icons/ShowChart'
+import MoneyOff from '@material-ui/icons/MoneyOff'
 
 // components
-import Funds from '../pages/Funds'
-import CreateFund from '../pages/CreateFund'
-import MyAccount from '../pages/MyAccount'
+import Stats from '../pages/Stats'
+import Deposit from '../pages/Deposit'
+import Claim from '../pages/Claim'
+import Withdraw from '../pages/Withdraw'
+
 
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
@@ -82,19 +86,23 @@ export default function MainApp() {
           indicatorColor="primary"
           centered={ isMobile ? false : true }
         >
-          <Tab label="Funds" icon={<AttachMoney />} {...a11yProps(0)} />
-          <Tab label="Create fund" icon={<Add/>} {...a11yProps(1)} />
-          <Tab label="My Account" icon={<AccountBox />} {...a11yProps(2)} />
+          <Tab label="Stats" icon={<ShowChart />} {...a11yProps(0)} />
+          <Tab label="Deposit" icon={<Add/>} {...a11yProps(1)} />
+          <Tab label="Claim" icon={<AttachMoney />} {...a11yProps(2)} />
+          <Tab label="Withdraw" icon={<MoneyOff />} {...a11yProps(3)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <Funds />
+        <Stats />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <CreateFund/>
+        <Deposit/>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <MyAccount />
+        <Claim/>
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <Withdraw/>
       </TabPanel>
     </div>
   );

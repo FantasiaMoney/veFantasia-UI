@@ -18,7 +18,7 @@ function Footer() {
   return (
     <div className={classes.footer}>
     <Typography className={classes.footertext} color="textSecondary">
-      Made by <a color="textprimary" href="https://cotrader.com/" rel="noopener noreferrer" target="_blank">CoTrader</a> team
+      2022
     </Typography>
     </div>
   )

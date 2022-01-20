@@ -26,7 +26,7 @@ export default function Header() {
         <Toolbar>
         <Typography variant="inherit" noWrap>
          <Link to="/">
-          <b style={{ color:"white" }}>Private funds</b>
+          <b style={{ color:"white" }}>Imagine</b>
          </Link>
          </Typography>
         </Toolbar>

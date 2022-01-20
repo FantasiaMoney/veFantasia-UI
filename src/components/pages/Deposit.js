@@ -31,7 +31,7 @@ async function createNewFund(name, address, password){
   window.location.reload()
 }
 
-function CreateTopic() {
+function Deposit() {
   const [address, setAddress] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -66,4 +66,4 @@ function CreateTopic() {
   )
 }
 
-export default CreateTopic
+export default Deposit

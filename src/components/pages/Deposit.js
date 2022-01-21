@@ -1,69 +1,57 @@
 import React, { useState } from 'react'
-import { Form, Button } from 'react-bootstrap'
-import { isAddress } from 'web3-utils'
-import axios from 'axios'
-import { ApiEndpoint, CURRENCY } from '../../config'
+import { Form, Button, Alert } from 'react-bootstrap'
+import { inject, observer } from 'mobx-react'
+import { CURRENCY, FetchAddress } from '../../config'
+import FetchAbi from '../../abi/FetchAbi'
 
+async function depositToFetch(amount, web3, accounts){
+  if(Number(amount) <= 0)
+    return alert("Wrong amount")
 
-async function createNewFund(name, address, password){
-  if(name === "")
-    return alert("Not correct name")
-
-  if(!isAddress(address))
-    return alert("Not correct address")
-
-  const axiosConfig = {
-    headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        "Access-Control-Allow-Origin": "*",
-        'Authorization': 'Bearer ' + process.env.REACT_APP_API_TOKEN
-    }
-  }
-
-  try{
-    const body = { address, name, password }
-    await axios.post(ApiEndpoint + '/add-new-fund/', body, axiosConfig)
-  }catch(err){
-    return alert("Server error")
-  }
-
-  alert("Done")
-  window.location.reload()
+  const fetchContract = new web3.eth.Contract(FetchAbi, FetchAddress)
+  fetchContract.methods.convert()
+  .send({
+    from:accounts[0],
+    value:web3.utils.toWei(String(amount))
+  })
 }
 
-function Deposit() {
-  const [address, setAddress] = useState('')
-  const [name, setName] = useState('')
-  const [password, setPassword] = useState('')
+function Deposit(props) {
+  const [amount, setAmount] = useState(0)
+  const web3 = props.MobXStorage.web3
+  const accounts = props.MobXStorage.accounts
 
   return(
     <Form>
     <Form.Group>
-      <Form.Label>Fund name</Form.Label>
-      <Form.Control type="text" onChange={(e) => setName(e.target.value)} />
+      <Form.Label>Input { CURRENCY } amount</Form.Label>
+      <Form.Control
+       type="number"
+       min="0"
+       onChange={(e) => setAmount(e.target.value)}
+      />
     </Form.Group>
 
     <Form.Group>
-      <Form.Label>Fund address</Form.Label>
-      <br/>
-      <Form.Label><small>{CURRENCY} wallet or smart contract address by which investors' assets will be calculated</small></Form.Label>
-      <Form.Control type="text" onChange={(e) => setAddress(e.target.value)} />
-    </Form.Group>
+    {
+      web3
+      ?
+      (
+        <Button
+         variant="outline-primary"
+         onClick={() => depositToFetch(amount, web3, accounts)}>
+        Deposit
+        </Button>
+      )
+      :
+      (
+        <Alert variant="warning">Please connect wallet</Alert>
+      )
+    }
 
-    <Form.Group>
-      <Form.Label>Fund password</Form.Label>
-      <br/>
-      <Form.Label><small>password for manage fund, note: this password can't be restored</small></Form.Label>
-      <Form.Control type="password" onChange={(e) => setPassword(e.target.value)} />
-    </Form.Group>
-
-    <Form.Group>
-    <Button
-     variant="outline-success"
-     onClick={() => createNewFund(name, address, password)}>Create</Button>
     </Form.Group>
     </Form>
   )
 }
 
-export default Deposit
+export default inject('MobXStorage')(observer(Deposit))

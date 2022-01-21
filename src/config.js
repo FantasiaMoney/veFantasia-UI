@@ -1,4 +1,3 @@
-export const NetworkID = 1
-export const ApiEndpoint = "https://api-private-funds.cotrader.com/api" // "http://localhost:9003/api"
-export const Etherscan = "https://etherscan.io"
-export const CURRENCY = "ETH"
+export const NetworkID = 250
+export const FetchAddress = "0x072008ca7E646aDf7DFA647108B1D191bE82471b"
+export const CURRENCY = "FANTOM"

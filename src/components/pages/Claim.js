@@ -14,28 +14,33 @@ async function claimFromStake(web3, accounts){
 }
 
 async function getData(web3, accounts){
-  console.log("Get data")
   const sohmContract = new web3.eth.Contract(SohmAbi, SohmAddress)
   const mySohmShares = await sohmContract.methods.balanceOf(accounts[0]).call()
+  const totalSohmShares = await sohmContract.methods.totalSupply().call()
   return {
-    mySohmShares
+    mySohmShares,
+    totalSohmShares
   }
 }
 
 function Claim(props) {
   // const [rebase, setRebase] = useState(false)
   const [myShares, setMyShares] = useState(false)
+  const [totalShares, setTotalShares] = useState(false)
   const web3 = props.MobXStorage.web3
   const accounts = props.MobXStorage.accounts
 
   useEffect(() => {
     async function loadData() {
-      console.log("Trigger", web3)
       if(web3){
-        console.log("Trigger2 ")
-        const { mySohmShares } = await getData(web3, accounts)
-        console.log("mySohmShares", mySohmShares)
+        const {
+          mySohmShares,
+          totalSohmShares
+        } = await getData(web3, accounts)
+
+        // update states
         setMyShares(mySohmShares)
+        setTotalShares(totalSohmShares)
       }
     }
 
@@ -65,7 +70,7 @@ function Claim(props) {
         </Card>
         <br/>
         <Card body>
-        Your rewards : {Number(myShares) / (10**9)}
+        Total shares : {Number(totalShares) / (10**9)}
         </Card>
         <br/>
         <Button

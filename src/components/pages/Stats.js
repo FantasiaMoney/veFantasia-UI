@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 // import { inject, observer } from 'mobx-react'
-import { Card, Badge, Form } from 'react-bootstrap'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
+import { Card, Form } from 'react-bootstrap'
 import Web3 from 'web3'
 import OhmAbi from '../../abi/OhmAbi'
 import { OhmAddress, Web3Rpc } from '../../config'
@@ -18,18 +16,8 @@ async function getData(){
   }
 }
 
-const useStyles = makeStyles(theme => ({
-  footer:{
-    margin:'40px 0 0',
-  },
-  footertext:{
-    textAlign:'center',
-    fontSize:16,
-  },
-}))
 
 function Stats(props) {
-  const classes = useStyles()
   const [tokenSupply, setTokenSupply] = useState(0)
   const [dataLoaded, setDataLoaded] = useState(false)
 
@@ -54,15 +42,15 @@ function Stats(props) {
   }, [])
 
   return (
-    <div>
+    <Form>
     {
       dataLoaded
       ?
       (
         <>
-        <Typography className={classes.footertext} color="textSecondary">
-        Supply: { tokenSupply }
-        </Typography>
+        <Card body>
+        Token supply: { Number(tokenSupply) / (10**9) }
+        </Card>
         </>
       )
       :
@@ -78,8 +66,8 @@ function Stats(props) {
         </div>
       )
     }
-    </div>
-  );
+    </Form>
+  )
 }
 
 export default Stats

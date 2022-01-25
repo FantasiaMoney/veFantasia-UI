@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { inject, observer } from 'mobx-react'
 import getWeb3 from './service/getWeb3'
 import { HashRouter } from 'react-router-dom'
-
+import { Alert } from 'react-bootstrap'
+import { NetworkID } from './config'
 import Header from './components/static/Header'
 import Routes from './components/static/Routes'
 import Footer from './components/static/Footer'
@@ -46,6 +47,14 @@ function App(props) {
   return (
     <HashRouter>
     <Header />
+    {
+      web3 && netId !== NetworkID
+      ?
+      (
+        <Alert variant="danger"> Wrong network </Alert>
+      )
+      : null
+    }
     <br/>
     <Routes props={props}/>
     <Footer />

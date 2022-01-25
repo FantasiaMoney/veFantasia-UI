@@ -16,7 +16,7 @@ async function claimFromStake(web3, accounts){
 async function getData(web3, accounts){
   const sohmContract = new web3.eth.Contract(SohmAbi, SohmAddress)
   const mySohmShares = await sohmContract.methods.balanceOf(accounts[0]).call()
-  const totalSohmShares = await sohmContract.methods.totalSupply().call()
+  const totalSohmShares = await sohmContract.methods.circulatingSupply().call()
   return {
     mySohmShares,
     totalSohmShares

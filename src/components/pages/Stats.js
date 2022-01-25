@@ -4,21 +4,47 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import { Card, Form } from 'react-bootstrap'
 import Web3 from 'web3'
 import OhmAbi from '../../abi/OhmAbi'
-import { OhmAddress, Web3Rpc } from '../../config'
+import DexRouterAbi from '../../abi/DexRouterAbi'
+import {
+  OhmAddress,
+  Web3Rpc,
+  DexRouterAddress,
+  OneTokenInWei,
+  StableCoinAddress,
+  WethAddress
+} from '../../config'
+import { fromWei } from 'web3-utils'
+
 
 async function getData(){
-  const web3 = new Web3(Web3Rpc)
-  const token = new web3.eth.Contract(OhmAbi, OhmAddress)
-  const _tokenSupply = await token.methods.totalSupply().call()
+  let _price = 0
+  let _tokenSupply = 0
+
+  try{
+    const web3 = new Web3(Web3Rpc)
+    const token = new web3.eth.Contract(OhmAbi, OhmAddress)
+    const router = new web3.eth.Contract(DexRouterAbi, DexRouterAddress)
+    const ratio = await router.methods.getAmountsOut(
+      OneTokenInWei,
+      [OhmAddress, WethAddress, StableCoinAddress]
+    ).call()
+    console.log(ratio[2], ratio)
+    _price = ratio[2]
+    _tokenSupply = await token.methods.totalSupply().call()
+  }catch(e){
+    console.log("err", e)
+  }
 
   return {
-    _tokenSupply
+    _tokenSupply,
+    _price
   }
 }
 
 
 function Stats(props) {
   const [tokenSupply, setTokenSupply] = useState(0)
+  const [price, setPrice] = useState(0)
   const [dataLoaded, setDataLoaded] = useState(false)
 
   useEffect(() => {
@@ -26,12 +52,14 @@ function Stats(props) {
      async function loadData() {
          // get data
          const {
-           _tokenSupply
+           _tokenSupply,
+           _price
          } = await getData()
 
          // set states
          if(!isCancelled){
-           setTokenSupply(_tokenSupply)
+           setTokenSupply(_tokenSupply, _price)
+           setPrice(_price)
            setDataLoaded(true)
          }
      }
@@ -49,7 +77,17 @@ function Stats(props) {
       (
         <>
         <Card body>
-        Token supply: { Number(tokenSupply) / (10**9) }
+        Token supply: { Number(Number(tokenSupply) / (10**9)).toFixed(2) }
+        </Card>
+        <br/>
+        <Card body>
+        Price: 1 token = {Number(fromWei(price)).toFixed(2)} USD
+        </Card>
+        <br/>
+        <Card body>
+        Market Cap: {Number(
+          Number(fromWei(price)) * Number(Number(tokenSupply) / (10**9))
+        ).toFixed(2)} USD
         </Card>
         </>
       )

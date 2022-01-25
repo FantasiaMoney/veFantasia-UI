@@ -15,7 +15,6 @@ import {
 // icons
 import AttachMoney from '@material-ui/icons/AttachMoney'
 import Add from '@material-ui/icons/Add'
-import AccountBox from '@material-ui/icons/AccountBox'
 import ShowChart from '@material-ui/icons/ShowChart'
 import MoneyOff from '@material-ui/icons/MoneyOff'
 

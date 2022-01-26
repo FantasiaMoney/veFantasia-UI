@@ -15,7 +15,9 @@ import {
   OneTokenInWei,
   StableCoinAddress,
   WethAddress,
-  TreasuryAddress
+  TreasuryAddress,
+  StakeAddress,
+  TOKEN_SYMBOL
 } from '../../config'
 
 
@@ -24,6 +26,7 @@ async function getData(){
   let _price = 0
   let _tokenSupply = 0
   let _totalReserves = 0
+  let _staked = 0
 
   try{
     const web3 = new Web3(Web3Rpc)
@@ -38,6 +41,7 @@ async function getData(){
     _price = ratio[2]
     _tokenSupply = await token.methods.totalSupply().call()
     _totalReserves = await treasury.methods.totalReserves().call()
+    _staked = await token.methods.balanceOf(StakeAddress).call()
   }
   catch(e){
     console.log("err", e)
@@ -46,7 +50,8 @@ async function getData(){
   return {
     _tokenSupply,
     _price,
-    _totalReserves
+    _totalReserves,
+    _staked
   }
 }
 
@@ -55,6 +60,7 @@ function Stats(props) {
   const [tokenSupply, setTokenSupply] = useState(0)
   const [price, setPrice] = useState(0)
   const [totalReserves, setTotalReserves] = useState(0)
+  const [staked, setStaked] = useState(0)
   const [dataLoaded, setDataLoaded] = useState(false)
 
   useEffect(() => {
@@ -64,7 +70,8 @@ function Stats(props) {
          const {
            _tokenSupply,
            _price,
-           _totalReserves
+           _totalReserves,
+           _staked
          } = await getData()
 
          // set states
@@ -72,6 +79,7 @@ function Stats(props) {
            setTokenSupply(_tokenSupply, _price)
            setPrice(_price)
            setTotalReserves(_totalReserves)
+           setStaked(_staked)
            setDataLoaded(true)
          }
      }
@@ -89,11 +97,11 @@ function Stats(props) {
       (
         <>
         <Card body>
-        Token supply: { Number(Number(tokenSupply) / (10**9)).toFixed(2) }
+        Token supply: { Number(Number(tokenSupply) / (10**9)).toFixed(2) } {TOKEN_SYMBOL}
         </Card>
         <br/>
         <Card body>
-        Price: 1 token = {Number(fromWei(price)).toFixed(2)} USD
+        Price: 1 {TOKEN_SYMBOL} = {Number(fromWei(price)).toFixed(2)} USD
         </Card>
         <br/>
         <Card body>
@@ -106,6 +114,12 @@ function Stats(props) {
         Treasury : {Number(
           Number(totalReserves) / (10**9)
         ).toFixed(2)} USD
+        </Card>
+        <br/>
+        <Card body>
+        Staked : {Number(
+          Number(staked) / (10**9)
+        ).toFixed(2)} {TOKEN_SYMBOL}
         </Card>
         </>
       )

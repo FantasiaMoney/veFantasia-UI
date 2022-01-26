@@ -11,5 +11,6 @@ export const TreasuryAddress = "0x09686bd671309300EeeddD8778AdC0576319171A"
 
 export const Web3Rpc = "https://rpc.ftm.tools/"
 export const CURRENCY = "FANTOM"
+export const TOKEN_SYMBOL = "DREAMS"
 
 export const OneTokenInWei = "1000000000"

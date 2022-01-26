@@ -5,39 +5,48 @@ import { Card, Form } from 'react-bootstrap'
 import Web3 from 'web3'
 import OhmAbi from '../../abi/OhmAbi'
 import DexRouterAbi from '../../abi/DexRouterAbi'
+import TreasuryAbi from '../../abi/TreasuryAbi'
+import { fromWei } from 'web3-utils'
+
 import {
   OhmAddress,
   Web3Rpc,
   DexRouterAddress,
   OneTokenInWei,
   StableCoinAddress,
-  WethAddress
+  WethAddress,
+  TreasuryAddress
 } from '../../config'
-import { fromWei } from 'web3-utils'
+
 
 
 async function getData(){
   let _price = 0
   let _tokenSupply = 0
+  let _totalReserves = 0
 
   try{
     const web3 = new Web3(Web3Rpc)
     const token = new web3.eth.Contract(OhmAbi, OhmAddress)
     const router = new web3.eth.Contract(DexRouterAbi, DexRouterAddress)
+    const treasury = new web3.eth.Contract(TreasuryAbi, TreasuryAddress)
     const ratio = await router.methods.getAmountsOut(
       OneTokenInWei,
       [OhmAddress, WethAddress, StableCoinAddress]
     ).call()
-    console.log(ratio[2], ratio)
+
     _price = ratio[2]
     _tokenSupply = await token.methods.totalSupply().call()
-  }catch(e){
+    _totalReserves = await treasury.methods.totalReserves().call()
+  }
+  catch(e){
     console.log("err", e)
   }
 
   return {
     _tokenSupply,
-    _price
+    _price,
+    _totalReserves
   }
 }
 
@@ -45,6 +54,7 @@ async function getData(){
 function Stats(props) {
   const [tokenSupply, setTokenSupply] = useState(0)
   const [price, setPrice] = useState(0)
+  const [totalReserves, setTotalReserves] = useState(0)
   const [dataLoaded, setDataLoaded] = useState(false)
 
   useEffect(() => {
@@ -53,13 +63,15 @@ function Stats(props) {
          // get data
          const {
            _tokenSupply,
-           _price
+           _price,
+           _totalReserves
          } = await getData()
 
          // set states
          if(!isCancelled){
            setTokenSupply(_tokenSupply, _price)
            setPrice(_price)
+           setTotalReserves(_totalReserves)
            setDataLoaded(true)
          }
      }
@@ -87,6 +99,12 @@ function Stats(props) {
         <Card body>
         Market Cap: {Number(
           Number(fromWei(price)) * Number(Number(tokenSupply) / (10**9))
+        ).toFixed(2)} USD
+        </Card>
+        <br/>
+        <Card body>
+        Treasury : {Number(
+          Number(totalReserves) / (10**9)
         ).toFixed(2)} USD
         </Card>
         </>

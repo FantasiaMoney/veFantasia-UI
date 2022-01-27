@@ -110,39 +110,34 @@ function Stats(props) {
       dataLoaded
       ?
       (
-        <>
-        <Card body>
+        <Card>
+        <Card.Header>
         Token supply: { Number(Number(tokenSupply) / (10**TOKEN_DECIMALS)).toFixed(2) } {TOKEN_SYMBOL}
-        </Card>
-        <br/>
+        </Card.Header>
 
-        <Card body>
+        <Card.Header>
         Price: 1 {TOKEN_SYMBOL} = {Number(Number(price / 10**USD_DECIMALS)).toFixed(2)} USD
-        </Card>
-        <br/>
+        </Card.Header>
 
-        <Card body>
+        <Card.Header>
         Market Cap: {Number(
           Number(Number(price / 10**USD_DECIMALS)) * Number(Number(tokenSupply) / (10**TOKEN_DECIMALS))
         ).toFixed(2)} USD
-        </Card>
-        <br/>
+        </Card.Header>
 
-        <Card body>
+        <Card.Header>
         Treasury : {Number(
           Number(totalReserves) / (10**TOKEN_DECIMALS)
         ).toFixed(2)} USD
-        </Card>
-        <br/>
+        </Card.Header>
 
-        <Card body>
+        <Card.Header>
         Staked : {Number(
           Number(staked) / (10**STAKE_DECIMALS)
         ).toFixed(2)} {TOKEN_SYMBOL}
-        </Card>
-        <br/>
+        </Card.Header>
 
-        <Card body>
+        <Card.Header>
         TVL : {Number(
           Number(staked) / (10**TOKEN_DECIMALS)
           +
@@ -150,8 +145,8 @@ function Stats(props) {
           +
           Number(ldInUSD) / (10**USD_DECIMALS)
         ).toFixed(2)} USD
+        </Card.Header>
         </Card>
-        </>
       )
       :
       (

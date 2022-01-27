@@ -46,7 +46,12 @@ function App(props) {
 
   return (
     <HashRouter>
-    <Header />
+    {
+      /*
+      <Header />
+      */
+    }
+
     {
       web3 && netId !== NetworkID
       ?

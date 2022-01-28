@@ -5,14 +5,16 @@ import { StakeAddress, SohmAddress } from '../../config'
 import StakeAbi from '../../abi/StakeAbi'
 import SohmAbi from '../../abi/SohmAbi'
 
-async function withdrawFromStake(amount, web3, accounts){
-  if(Number(amount) <= 0)
+async function withdrawFromStake(amount, useMax, maxAmount, web3, accounts){
+  const amountToWithdraw = useMax ? maxAmount : amount
+
+  if(amountToWithdraw <= 0)
     return alert("Wrong amount")
 
   const stakeContract = new web3.eth.Contract(StakeAbi, StakeAddress)
   stakeContract.methods.unstake(
     accounts[0],
-    amount,
+    amountToWithdraw,
     true,
     true
   ).send({ from:accounts[0] })
@@ -37,10 +39,16 @@ async function unlock(web3, accounts){
   ).send({ from:accounts[0] })
 }
 
+async function setMax(setUseMax, setAmount, maxAmount){
+  setUseMax(true)
+  setAmount(Number(maxAmount) / (10**9))
+}
+
 function Withdraw(props) {
   const [amount, setAmount] = useState(0)
   const [approved, setApproved] = useState(0)
   const [myShares, setMyShares] = useState(false)
+  const [useMax, setUseMax] = useState(false)
   const web3 = props.MobXStorage.web3
   const accounts = props.MobXStorage.accounts
 
@@ -78,6 +86,7 @@ function Withdraw(props) {
           <Form.Control
            type="number"
            min="0"
+           value={amount}
            onChange={(e) => setAmount(e.target.value)}
           />
 
@@ -85,7 +94,7 @@ function Withdraw(props) {
           <Button
            variant="outline-primary"
            size="sm"
-           onClick={() => withdrawFromStake(myShares, web3, accounts)}>
+           onClick={() => setMax(setUseMax, setAmount, myShares)}>
           Withdraw Max
           </Button>
           </InputGroup.Text>
@@ -94,13 +103,15 @@ function Withdraw(props) {
         <Form.Group>
 
         {
-          Number(myShares) > Number(approved)
+          Number(approved) > Number(myShares)
           ?
           (
             <Button
              variant="outline-primary"
              onClick={() => withdrawFromStake(
                Number(amount * (10**9)).toFixed(),
+               useMax,
+               myShares,
                web3,
                accounts
              )}>

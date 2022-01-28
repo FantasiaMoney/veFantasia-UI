@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Alert, Card } from 'react-bootstrap'
+import { Form, Button, Alert, Card, InputGroup } from 'react-bootstrap'
 import { inject, observer } from 'mobx-react'
 import { StakeAddress, SohmAddress } from '../../config'
 import StakeAbi from '../../abi/StakeAbi'
@@ -20,14 +20,26 @@ async function withdrawFromStake(amount, web3, accounts){
 
 async function getData(web3, accounts){
   const sohmContract = new web3.eth.Contract(SohmAbi, SohmAddress)
+  const myApproved = await sohmContract.methods.allowance(StakeAddress, accounts[0]).call()
   const mySohmShares = await sohmContract.methods.balanceOf(accounts[0]).call()
+
   return {
-    mySohmShares
+    mySohmShares,
+    myApproved
   }
+}
+
+async function unlock(web3, accounts){
+  const sohmContract = new web3.eth.Contract(SohmAbi, SohmAddress)
+  sohmContract.methods.approve(
+    StakeAddress,
+    "10000000000000000000000000000000000000000000000000"
+  ).send({ from:accounts[0] })
 }
 
 function Withdraw(props) {
   const [amount, setAmount] = useState(0)
+  const [approved, setApproved] = useState(0)
   const [myShares, setMyShares] = useState(false)
   const web3 = props.MobXStorage.web3
   const accounts = props.MobXStorage.accounts
@@ -37,9 +49,11 @@ function Withdraw(props) {
       if(web3){
         const {
           mySohmShares,
+          myApproved
         } = await getData(web3, accounts)
 
         // update states
+        setApproved(myApproved)
         setMyShares(mySohmShares)
       }
     }
@@ -49,30 +63,64 @@ function Withdraw(props) {
 
   return(
     <Form>
-    <Form.Group>
-      <Form.Label>Input shares amount</Form.Label>
-      <Form.Control
-       type="number"
-       min="0"
-       onChange={(e) => setAmount(e.target.value)}
-      />
-    </Form.Group>
+
+
 
     <Form.Group>
     {
       web3
       ?
       (
+        <>
         <Form.Group>
-        <Button
-         variant="outline-primary"
-         onClick={() => withdrawFromStake(
-           Number(amount * (10**9)).toFixed(),
-           web3,
-           accounts
-         )}>
-         Withdraw
-        </Button>
+          <Form.Label>Input shares amount</Form.Label>
+          <InputGroup size="lg">
+          <Form.Control
+           type="number"
+           min="0"
+           onChange={(e) => setAmount(e.target.value)}
+          />
+
+          <InputGroup.Text>
+          <Button
+           variant="outline-primary"
+           size="sm"
+           onClick={() => withdrawFromStake(myShares, web3, accounts)}>
+          Withdraw Max
+          </Button>
+          </InputGroup.Text>
+          </InputGroup>
+        </Form.Group>
+        <Form.Group>
+
+        {
+          Number(myShares) > Number(approved)
+          ?
+          (
+            <Button
+             variant="outline-primary"
+             onClick={() => withdrawFromStake(
+               Number(amount * (10**9)).toFixed(),
+               web3,
+               accounts
+             )}>
+             Withdraw
+            </Button>
+          )
+          :
+          (
+            <Button
+             variant="outline-warning"
+             onClick={() => unlock(
+               web3,
+               accounts
+             )}
+            >
+             Unlock
+            </Button>
+          )
+        }
+
         <br/>
         <br/>
 
@@ -80,13 +128,8 @@ function Withdraw(props) {
         Your shares : {Number(myShares) / (10**9)}
         </Card>
         <br/>
-
-        <Button
-         variant="outline-primary"
-         onClick={() => withdrawFromStake(myShares, web3, accounts)}>
-        Withdraw Max
-        </Button>
         </Form.Group>
+        </>
       )
       :
       (

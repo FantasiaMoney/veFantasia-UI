@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Alert, Card, InputGroup } from 'react-bootstrap'
+import { Form, Button, Alert, InputGroup } from 'react-bootstrap'
 import { inject, observer } from 'mobx-react'
 import { StakeAddress, SohmAddress } from '../../config'
 import StakeAbi from '../../abi/StakeAbi'
@@ -81,6 +81,10 @@ function Withdraw(props) {
       (
         <>
         <Form.Group>
+          <Alert variant="info">
+          Your shares : {Number(myShares) / (10**9)}
+          </Alert>
+          <br/>
           <Form.Label>Input shares amount</Form.Label>
           <InputGroup size="lg">
           <Form.Control
@@ -131,14 +135,6 @@ function Withdraw(props) {
             </Button>
           )
         }
-
-        <br/>
-        <br/>
-
-        <Card body>
-        Your shares : {Number(myShares) / (10**9)}
-        </Card>
-        <br/>
         </Form.Group>
         </>
       )

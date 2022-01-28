@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button, Alert, Card } from 'react-bootstrap'
+import { Form, Button, Alert } from 'react-bootstrap'
 import { inject, observer } from 'mobx-react'
 import { StakeAddress, SohmAddress } from '../../config'
 import StakeAbi from '../../abi/StakeAbi'
@@ -65,14 +65,11 @@ function Claim(props) {
       ?
       (
         <Form.Group>
-        <Card body>
+        <Alert variant="info">
         Your shares : {Number(myShares) / (10**9)}
-        </Card>
-        <br/>
-        <Card body>
+        <hr/>
         Total shares : {Number(totalShares) / (10**9)}
-        </Card>
-        <br/>
+        </Alert>
         <Button
          variant="outline-primary"
          onClick={() => claimFromStake(web3, accounts)}>

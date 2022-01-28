@@ -71,9 +71,6 @@ function Withdraw(props) {
 
   return(
     <Form>
-
-
-
     <Form.Group>
     {
       web3

@@ -23,33 +23,35 @@ function Deposit(props) {
 
   return(
     <Form>
-    <Form.Group>
-      <Form.Label>Input { CURRENCY } amount</Form.Label>
-      <Form.Control
-       type="number"
-       min="0"
-       onChange={(e) => setAmount(e.target.value)}
-      />
-    </Form.Group>
-
-    <Form.Group>
     {
       web3
       ?
       (
+        <>
+        <Form.Group>
+        <Form.Label>Input { CURRENCY } amount</Form.Label>
+        <Form.Control
+         type="number"
+         min="0"
+         value={amount}
+         onChange={(e) => setAmount(e.target.value)}
+        />
+        </Form.Group>
+        
+        <Form.Group>
         <Button
          variant="outline-primary"
          onClick={() => depositToFetch(amount, web3, accounts)}>
         Deposit
         </Button>
+        </Form.Group>
+        </>
       )
       :
       (
         <Alert variant="warning">Please connect wallet</Alert>
       )
     }
-
-    </Form.Group>
     </Form>
   )
 }

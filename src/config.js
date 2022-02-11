@@ -1,7 +1,8 @@
 export const NetworkID = 97
 
 export const FetchAddress = "0x76efF446792B80198CC494A0FE76a7583F48b755"
-export const OhmAddress = "0x64Fd9b5BFcDEc6D8957D1d3D7C808F6E0084FAEa"
+export const TokenAddress = "0x64Fd9b5BFcDEc6D8957D1d3D7C808F6E0084FAEa"
+export const VTokenAddress = "0x62a3202d042fE982Db44094F5207acCaB802257d"
 export const DexRouterAddress = "0xcCb6973225FE7e61B97E0fe1a7822EEc56884d92"
 export const StableCoinAddress = "0x44bdc3a48677e4814e338da0361c1fffe9037d18"
 export const WethAddress = "0x1C4Ed1F3d87e5A6100cffd37b2a4E739f5b6bDD9"

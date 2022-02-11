@@ -1,6 +1,12 @@
-const SohmAbi = [
+const Erc20Abi = [
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_router",
+				"type": "address"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -33,57 +39,70 @@ const SohmAbi = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "epoch",
-				"type": "uint256"
-			},
-			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "rebase",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "index",
+				"name": "minTokensBeforeSwap",
 				"type": "uint256"
 			}
 		],
-		"name": "LogRebase",
+		"name": "MinTokensBeforeSwapUpdated",
 		"type": "event"
 	},
 	{
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "address",
-				"name": "stakingContract",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
 				"type": "address"
 			}
 		],
-		"name": "LogStakingContractUpdated",
+		"name": "OwnershipTransferred",
 		"type": "event"
 	},
 	{
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
+				"indexed": false,
 				"internalType": "uint256",
-				"name": "epoch",
+				"name": "tokensSwapped",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "totalSupply",
+				"name": "ethReceived",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokensIntoLiqudity",
 				"type": "uint256"
 			}
 		],
-		"name": "LogSupply",
+		"name": "SwapAndLiquify",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "enabled",
+				"type": "bool"
+			}
+		],
+		"name": "SwapAndLiquifyEnabledUpdated",
 		"type": "event"
 	},
 	{
@@ -113,12 +132,38 @@ const SohmAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "DOMAIN_SEPARATOR",
+		"name": "_liquidityFee",
 		"outputs": [
 			{
-				"internalType": "bytes32",
+				"internalType": "uint256",
 				"name": "",
-				"type": "bytes32"
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "_maxTxAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "_taxFee",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -128,7 +173,7 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "owner_",
+				"name": "owner",
 				"type": "address"
 			},
 			{
@@ -157,7 +202,7 @@ const SohmAbi = [
 			},
 			{
 				"internalType": "uint256",
-				"name": "value",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
@@ -175,86 +220,12 @@ const SohmAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "gons",
-				"type": "uint256"
-			}
-		],
-		"name": "balanceForGons",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
-				"name": "who",
+				"name": "account",
 				"type": "address"
 			}
 		],
 		"name": "balanceOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "debtor",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "add",
-				"type": "bool"
-			}
-		],
-		"name": "changeDebt",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "circulatingSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "debtBalances",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -306,29 +277,62 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "tAmount",
 				"type": "uint256"
 			}
 		],
-		"name": "fromG",
+		"name": "deliver",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "excludeFromFee",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "excludeFromReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "excludeFromTransferLimit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "geUnlockTime",
 		"outputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "gOHM",
-		"outputs": [
-			{
-				"internalType": "contract IgOHM",
-				"name": "",
-				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -337,20 +341,40 @@ const SohmAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
 			}
 		],
-		"name": "gonsForBalance",
-		"outputs": [
+		"name": "includeInFee",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
 			}
 		],
-		"stateMutability": "view",
+		"name": "includeInReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "includeInTransferLimit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -378,13 +402,19 @@ const SohmAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "index",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "isExcludedFromFee",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "bool",
 				"name": "",
-				"type": "uint256"
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -394,16 +424,49 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_stakingContract",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_treasury",
+				"name": "account",
 				"type": "address"
 			}
 		],
-		"name": "initialize",
+		"name": "isExcludedFromReward",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "isExcludedFromTransferLimit",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			}
+		],
+		"name": "lock",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -422,14 +485,32 @@ const SohmAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
 			{
 				"internalType": "address",
-				"name": "owner",
+				"name": "",
 				"type": "address"
 			}
 		],
-		"name": "nonces",
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "deductTransferFee",
+				"type": "bool"
+			}
+		],
+		"name": "reflectionFromToken",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -441,44 +522,8 @@ const SohmAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "deadline",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint8",
-				"name": "v",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "r",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "s",
-				"type": "bytes32"
-			}
-		],
-		"name": "permit",
+		"inputs": [],
+		"name": "renounceOwnership",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -487,84 +532,11 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "profit_",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "epoch_",
+				"name": "liquidityFee",
 				"type": "uint256"
 			}
 		],
-		"name": "rebase",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "rebases",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "epoch",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rebase",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalStakedBefore",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalStakedAfter",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amountRebased",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "blockNumberOccured",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_index",
-				"type": "uint256"
-			}
-		],
-		"name": "setIndex",
+		"name": "setLiquidityFeePercent",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -572,24 +544,50 @@ const SohmAbi = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "_gOHM",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "maxTxPercent",
+				"type": "uint256"
 			}
 		],
-		"name": "setgOHM",
+		"name": "setMaxTxPercent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "_enabled",
+				"type": "bool"
+			}
+		],
+		"name": "setSwapAndLiquifyEnabled",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "taxFee",
+				"type": "uint256"
+			}
+		],
+		"name": "setTaxFeePercent",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"inputs": [],
-		"name": "stakingContract",
+		"name": "swapAndLiquifyEnabled",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "bool",
 				"name": "",
-				"type": "address"
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -612,11 +610,24 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "rAmount",
 				"type": "uint256"
 			}
 		],
-		"name": "toG",
+		"name": "tokenFromReflection",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalFees",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -644,12 +655,12 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "to",
+				"name": "recipient",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "value",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
@@ -668,17 +679,17 @@ const SohmAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "from",
+				"name": "sender",
 				"type": "address"
 			},
 			{
 				"internalType": "address",
-				"name": "to",
+				"name": "recipient",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "value",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
@@ -694,8 +705,21 @@ const SohmAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
-		"name": "treasury",
+		"name": "uniswapV2Pair",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -705,7 +729,31 @@ const SohmAbi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "uniswapV2Router",
+		"outputs": [
+			{
+				"internalType": "contract IUniswapV2Router02",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "unlock",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
 	}
 ]
 
-export default SohmAbi
+export default Erc20Abi

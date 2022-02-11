@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { Card, Form } from 'react-bootstrap'
 import Web3 from 'web3'
-import OhmAbi from '../../abi/OhmAbi'
 import DexRouterAbi from '../../abi/DexRouterAbi'
 import TreasuryAbi from '../../abi/TreasuryAbi'
+import Erc20Abi from '../../abi/Erc20Abi'
 
 import {
-  OhmAddress,
+  TokenAddress,
   Web3Rpc,
   DexRouterAddress,
   OneTokenInWei,
@@ -29,15 +29,15 @@ async function getData(){
 
   try{
     const web3 = new Web3(Web3Rpc)
-    const token = new web3.eth.Contract(OhmAbi, OhmAddress)
-    const wEth = new web3.eth.Contract(OhmAbi, WethAddress)
+    const token = new web3.eth.Contract(Erc20Abi, TokenAddress)
+    const wEth = new web3.eth.Contract(Erc20Abi, WethAddress)
     const router = new web3.eth.Contract(DexRouterAbi, DexRouterAddress)
     const treasury = new web3.eth.Contract(TreasuryAbi, TreasuryAddress)
     const wEthLD = await wEth.methods.balanceOf(OHM_WETH_pair).call()
 
     const ratio = await router.methods.getAmountsOut(
       OneTokenInWei,
-      [OhmAddress, WethAddress, StableCoinAddress]
+      [TokenAddress, WethAddress, StableCoinAddress]
     ).call()
 
     const ldUSD = await router.methods.getAmountsOut(

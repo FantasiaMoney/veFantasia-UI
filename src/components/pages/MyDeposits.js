@@ -1,28 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { Card, Form, Alert, Button } from 'react-bootstrap'
-import Web3 from 'web3'
 import FetchAbi from '../../abi/FetchAbi'
 import VTokenToTokenABI from '../../abi/VTokenToTokenABI'
 import VTokenToTokenViewHelperABI from '../../abi/VTokenToTokenViewHelperABI'
+import VTokenAddressABI from '../../abi/VTokenAddressABI'
 import { inject, observer } from 'mobx-react'
-import { fromWei, toWei } from 'web3-utils'
+import { fromWei } from 'web3-utils'
 
 import {
   FetchAddress,
+  VTokenAddress,
   VTokenToToken,
   VTokenToTokenViewHelper,
   CONVERT_DURATION
 } from '../../config'
 
-// helper for calculate deposit amount in wei
-function calculateDepositWEI(balanceBefore, balanceAfter){
-  const result = balanceBefore > balanceAfter
-  ? balanceBefore - balanceAfter
-  : balanceAfter - balanceBefore
-
-  return Number(result).toFixed(6)
-}
 
 // helper for convert unix time to date
 function fetchDate(unixDate){
@@ -30,14 +23,16 @@ function fetchDate(unixDate){
   return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
-// helper for calculate how much user can reedem now
-async function calculateReedemWEI(web3, startTime, amount){
-   const vTokenToToken = new web3.eth.Contract(VTokenToTokenABI, VTokenToToken)
-   const toReedem = await vTokenToToken.methods
-   .calculateReturn(startTime, toWei(String(amount)))
-   .call()
+function withdraw(web3, accounts, _depositId, _amount){
+  const converter = new web3.eth.Contract(VTokenToTokenABI, VTokenToToken)
+  converter.methods.convert(accounts[0], _depositId, _amount)
+  .send({ from:accounts[0] })
+}
 
-   return toReedem
+function unlock(web3, accounts, _amount){
+  const token = new web3.eth.Contract(VTokenAddressABI, VTokenAddress)
+  token.methods.approveBurn(VTokenToToken, _amount)
+  .send({ from:accounts[0] })
 }
 
 // helper for load data from contracts
@@ -60,17 +55,28 @@ async function getData(web3, accounts){
           const deposited = Number(fromWei(depositedWei)).toFixed(6)
           const depositDate = await fetchDate(data.time)
           const withdrawDate = await fetchDate(Number(data.time) + CONVERT_DURATION)
+          const depositId = i
 
-          const toReedem = await viewHelper.methods.calculateReturn(
+          const reedemInWei = await viewHelper.methods.calculateReturn(
              CONVERT_DURATION,
              data.time,
              data.balanceBefore,
              data.balanceAfter
           ).call()
-          const reedemAmount = toReedem > 0 ? Number(fromWei(String(toReedem))).toFixed(8): 0
+
+          const reedemAmount = reedemInWei > 0
+          ? Number(fromWei(String(reedemInWei))).toFixed(8)
+          : 0
 
           myDeposits.push(
-            { ...data, deposited, depositDate, reedemAmount, withdrawDate }
+            { ...data,
+              deposited,
+              depositDate,
+              reedemAmount,
+              withdrawDate,
+              depositedWei,
+              depositId
+            }
           )
         }
       }
@@ -99,6 +105,8 @@ function MyDeposits(props) {
          // set states
          if(!isCancelled && web3){
            setMyDeposits(_myDeposits)
+
+           console.log("_myDeposits", _myDeposits)
 
            if(_myDeposits.length === 0)
              setNoDeposits(true)
@@ -151,7 +159,28 @@ function MyDeposits(props) {
                   Exit with 1 to 1 rate will be available : {item.withdrawDate}
                   <hr/>
 
-                  <Button variant="outline-primary">Exit</Button>
+                  <Button
+                  variant="outline-warning"
+                  onClick={() => unlock(
+                    web3,
+                    accounts,
+                    item.depositedWei
+                  )}
+                  >
+                  Unlock
+                  </Button>
+
+                  <Button
+                  variant="outline-primary"
+                  onClick={() => withdraw(
+                    web3,
+                    accounts,
+                    item.depositId,
+                    item.depositedWei
+                  )}
+                  >
+                  Exit
+                  </Button>
                   </Card.Body>
                   </Card>
                   <br/>

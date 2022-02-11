@@ -1,21 +1,18 @@
-export const NetworkID = 250
+export const NetworkID = 97
 
-export const FetchAddress = "0x072008ca7E646aDf7DFA647108B1D191bE82471b"
-export const OhmAddress = "0xa4A82FE0C0Ee408782dd9f2C47f200D9Ab79e469"
-export const StakeAddress = "0xb9EB172D0F4033cB5b4C6906c4491111de739cdE"
-export const SohmAddress = "0x0a1Ce9Aa18CbeAb38f325E40098F8d0c93C59e26"
-export const DexRouterAddress = "0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52"
-export const StableCoinAddress = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
-export const WethAddress = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
-export const TreasuryAddress = "0x09686bd671309300EeeddD8778AdC0576319171A"
-export const OHM_WETH_pair = "0xd017cc0F831A8aAD00838526e4797547F4909A89"
+export const FetchAddress = "0x76efF446792B80198CC494A0FE76a7583F48b755"
+export const OhmAddress = "0x64Fd9b5BFcDEc6D8957D1d3D7C808F6E0084FAEa"
+export const DexRouterAddress = "0xcCb6973225FE7e61B97E0fe1a7822EEc56884d92"
+export const StableCoinAddress = "0x44bdc3a48677e4814e338da0361c1fffe9037d18"
+export const WethAddress = "0x1C4Ed1F3d87e5A6100cffd37b2a4E739f5b6bDD9"
+export const TreasuryAddress = "0x62B84d7C521128ADAF09591C11101Ab1a70c30a7"
+export const OHM_WETH_pair = "0xc0F59c3725755f8D583238aB4E2eD4E5B8Cc032C"
 
 export const USD_DECIMALS = 18
-export const TOKEN_DECIMALS = 9
-export const STAKE_DECIMALS = 9
+export const TOKEN_DECIMALS = 18
 
-export const Web3Rpc = "https://rpc.ftm.tools/"
-export const CURRENCY = "FANTOM"
-export const TOKEN_SYMBOL = "DREAMS"
+export const Web3Rpc = "https://data-seed-prebsc-1-s1.binance.org:8545/"
+export const CURRENCY = "BNB"
+export const TOKEN_SYMBOL = "DAO"
 
-export const OneTokenInWei = "1000000000"
+export const OneTokenInWei = "1000000000000000000"

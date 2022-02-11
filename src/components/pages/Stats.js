@@ -14,12 +14,10 @@ import {
   StableCoinAddress,
   WethAddress,
   TreasuryAddress,
-  StakeAddress,
   TOKEN_SYMBOL,
   OHM_WETH_pair,
   USD_DECIMALS,
-  TOKEN_DECIMALS,
-  STAKE_DECIMALS
+  TOKEN_DECIMALS
 } from '../../config'
 
 
@@ -27,8 +25,6 @@ import {
 async function getData(){
   let _price = 0
   let _tokenSupply = 0
-  let _totalReserves = 0
-  let _staked = 0
   let _ldInUSD = 0
 
   try{
@@ -38,6 +34,7 @@ async function getData(){
     const router = new web3.eth.Contract(DexRouterAbi, DexRouterAddress)
     const treasury = new web3.eth.Contract(TreasuryAbi, TreasuryAddress)
     const wEthLD = await wEth.methods.balanceOf(OHM_WETH_pair).call()
+
     const ratio = await router.methods.getAmountsOut(
       OneTokenInWei,
       [OhmAddress, WethAddress, StableCoinAddress]
@@ -50,8 +47,6 @@ async function getData(){
 
     _price = ratio[2]
     _tokenSupply = await token.methods.totalSupply().call()
-    _totalReserves = await treasury.methods.totalReserves().call()
-    _staked = await token.methods.balanceOf(StakeAddress).call()
     _ldInUSD = ldUSD[1]
   }
   catch(e){
@@ -61,8 +56,6 @@ async function getData(){
   return {
     _tokenSupply,
     _price,
-    _totalReserves,
-    _staked,
     _ldInUSD
   }
 }
@@ -72,8 +65,6 @@ function Stats(props) {
   const [tokenSupply, setTokenSupply] = useState(0)
   const [price, setPrice] = useState(0)
   const [ldInUSD, setLdInUSD] = useState(0)
-  const [totalReserves, setTotalReserves] = useState(0)
-  const [staked, setStaked] = useState(0)
   const [dataLoaded, setDataLoaded] = useState(false)
 
   useEffect(() => {
@@ -83,8 +74,6 @@ function Stats(props) {
          const {
            _tokenSupply,
            _price,
-           _totalReserves,
-           _staked,
            _ldInUSD
          } = await getData()
 
@@ -92,8 +81,6 @@ function Stats(props) {
          if(!isCancelled){
            setTokenSupply(_tokenSupply, _price)
            setPrice(_price)
-           setTotalReserves(_totalReserves)
-           setStaked(_staked)
            setLdInUSD(_ldInUSD)
            setDataLoaded(true)
          }
@@ -126,23 +113,7 @@ function Stats(props) {
         </Card.Header>
 
         <Card.Header>
-        Treasury : {Number(
-          Number(totalReserves) / (10**TOKEN_DECIMALS)
-        ).toFixed(2)} USD
-        </Card.Header>
-
-        <Card.Header>
-        Staked : {Number(
-          Number(staked) / (10**STAKE_DECIMALS)
-        ).toFixed(2)} {TOKEN_SYMBOL}
-        </Card.Header>
-
-        <Card.Header>
         TVL : {Number(
-          Number(staked) / (10**TOKEN_DECIMALS)
-          +
-          Number(totalReserves) / (10**TOKEN_DECIMALS)
-          +
           Number(ldInUSD) / (10**USD_DECIMALS)
         ).toFixed(2)} USD
         </Card.Header>

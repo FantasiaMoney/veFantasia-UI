@@ -12,11 +12,8 @@ import {
   VTokenToToken
 } from '../../config'
 
-// helper for calculate deposit amount
-function calculateDeposit(before, after){
-  const balanceBefore = before > 0 ? fromWei(String(before)) : 0
-  const balanceAfter = after > 0 ? fromWei(String(after)) : 0
-
+// helper for calculate deposit amount in wei
+function calculateDepositWEI(balanceBefore, balanceAfter){
   const result = balanceBefore > balanceAfter
   ? balanceBefore - balanceAfter
   : balanceAfter - balanceBefore
@@ -31,13 +28,13 @@ function fetchDate(unixDate){
 }
 
 // helper for calculate how much user can reedem now
-async function calculateReturn(web3, startTime, amount){
+async function calculateReedemWEI(web3, startTime, amount){
    const vTokenToToken = new web3.eth.Contract(VTokenToTokenABI, VTokenToToken)
    const toReedem = await vTokenToToken.methods
    .calculateReturn(startTime, toWei(String(amount)))
    .call()
 
-   return Number(fromWei(String(toReedem))).toFixed(6)
+   return toReedem
 }
 
 // helper for load data from contracts
@@ -53,9 +50,10 @@ async function getData(web3, accounts){
       if(totalUserDeposits > 0){
         for(let i = 0; i < totalUserDeposits; i++){
           const data = await fetchContract.methods.depositsPerUser(accounts[0], i).call()
-          const deposited = await calculateDeposit(data.balanceBefore, data.balanceAfter)
+          const depositedWei = await calculateDepositWEI(data.balanceBefore, data.balanceAfter)
+          const deposited = Number(depositedWei).toFixed(6)
           const depositDate = await fetchDate(data.time)
-          const toReedem = await calculateReturn(web3, data.time, toWei(String(deposited)))
+          const toReedem = await calculateReedemWEI(web3, data.time, depositedWei)
           const reedemAmount = toReedem > 0 ? Number(fromWei(String(toReedem))).toFixed(6): 0
 
           console.log("data.balanceBefore", deposited, depositDate, reedemAmount)

@@ -35,9 +35,9 @@ async function getData(web3, accounts){
 
   console.log(myDeposits.length)
   console.log(myDeposits)
-  return {
-    myDeposits
-  }
+
+  return myDeposits
+
 }
 
 
@@ -51,10 +51,11 @@ function MyDeposits(props) {
     let isCancelled = false
      async function loadData() {
          // get data
-         const { _myDeposits } = await getData(web3, accounts)
+         const _myDeposits  = await getData(web3, accounts)
 
          // set states
          if(!isCancelled){
+           console.log("Should update states", _myDeposits)
            setMyDeposits(_myDeposits)
            setDataLoaded(true)
          }
@@ -79,29 +80,28 @@ function MyDeposits(props) {
           ?
           (
             <>
-            {myDeposits}
             {
-              // myDeposits.length > 0
-              // ?
-              // (
-              //   <>
-              //   {
-              //     myDeposits.map((key, item) => {
-              //       return (
-              //         <Card key={key}>
-              //         <Card.Header>
-              //         Test
-              //         </Card.Header>
-              //         </Card>
-              //       )
-              //     })
-              //   }
-              //   </>
-              // )
-              // :
-              // (
-              //   <>No deposits </>
-              // )
+              myDeposits.length > 0
+              ?
+              (
+                <>
+                {
+                  myDeposits.map((item, key) => {
+                    return (
+                      <Card key={key}>
+                      <Card.Header>
+                      {item.time}
+                      </Card.Header>
+                      </Card>
+                    )
+                  })
+                }
+                </>
+              )
+              :
+              (
+                <>No deposits </>
+              )
             }
             </>
           )

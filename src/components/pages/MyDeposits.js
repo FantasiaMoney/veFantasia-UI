@@ -4,12 +4,15 @@ import { Card, Form, Alert, Button } from 'react-bootstrap'
 import Web3 from 'web3'
 import FetchAbi from '../../abi/FetchAbi'
 import VTokenToTokenABI from '../../abi/VTokenToTokenABI'
+import VTokenToTokenViewHelperABI from '../../abi/VTokenToTokenViewHelperABI'
 import { inject, observer } from 'mobx-react'
 import { fromWei, toWei } from 'web3-utils'
 
 import {
   FetchAddress,
-  VTokenToToken
+  VTokenToToken,
+  VTokenToTokenViewHelper,
+  CONVERT_DURATION
 } from '../../config'
 
 // helper for calculate deposit amount in wei
@@ -48,12 +51,23 @@ async function getData(web3, accounts){
       totalUserDeposits = await fetchContract.methods.totalUserDeposits(accounts[0]).call()
 
       if(totalUserDeposits > 0){
+        const viewHelper = new web3.eth.Contract(VTokenToTokenViewHelperABI, VTokenToTokenViewHelper)
         for(let i = 0; i < totalUserDeposits; i++){
           const data = await fetchContract.methods.depositsPerUser(accounts[0], i).call()
-          const depositedWei = await calculateDepositWEI(data.balanceBefore, data.balanceAfter)
-          const deposited = Number(depositedWei).toFixed(6)
+          const depositedWei = await viewHelper.methods
+          .calculateDeposit(data.balanceBefore, data.balanceAfter).call()
+
+          const deposited = Number(fromWei(depositedWei)).toFixed(6)
+
+          console.log(deposited)
           const depositDate = await fetchDate(data.time)
-          const toReedem = await calculateReedemWEI(web3, data.time, depositedWei)
+
+          const toReedem = await viewHelper.methods.calculateReturn(
+             CONVERT_DURATION,
+             data.time,
+             data.balanceBefore,
+             data.balanceAfter
+          ).call()
           const reedemAmount = toReedem > 0 ? Number(fromWei(String(toReedem))).toFixed(6): 0
 
           console.log("data.balanceBefore", deposited, depositDate, reedemAmount)
@@ -133,7 +147,7 @@ function MyDeposits(props) {
                       <Card.Body>
                       Amount : { item.deposited }
                       <br/>
-                      To reedem : { item.reedemAmount }
+                      Current rate : { item.reedemAmount }
                       <br/>
                       <Button variant="outline-primary">Reedem</Button>
                       </Card.Body>

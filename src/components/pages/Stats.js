@@ -7,6 +7,7 @@ import Erc20Abi from '../../abi/Erc20Abi'
 
 import {
   TokenAddress,
+  VTokenAddress,
   Web3Rpc,
   DexRouterAddress,
   OneTokenInWei,
@@ -15,7 +16,8 @@ import {
   TOKEN_SYMBOL,
   OHM_WETH_pair,
   USD_DECIMALS,
-  TOKEN_DECIMALS
+  TOKEN_DECIMALS,
+  VTOKEN_DECIMALS
 } from '../../config'
 
 
@@ -23,11 +25,13 @@ import {
 async function getData(){
   let _price = 0
   let _tokenSupply = 0
+  let _vTokenSupply = 0
   let _ldInUSD = 0
 
   try{
     const web3 = new Web3(Web3Rpc)
     const token = new web3.eth.Contract(Erc20Abi, TokenAddress)
+    const vToken = new web3.eth.Contract(Erc20Abi, VTokenAddress)
     const wEth = new web3.eth.Contract(Erc20Abi, WethAddress)
     const router = new web3.eth.Contract(DexRouterAbi, DexRouterAddress)
     const wEthLD = await wEth.methods.balanceOf(OHM_WETH_pair).call()
@@ -44,6 +48,7 @@ async function getData(){
 
     _price = ratio[2]
     _tokenSupply = await token.methods.totalSupply().call()
+    _vTokenSupply = await vToken.methods.totalSupply().call()
     _ldInUSD = ldUSD[1]
   }
   catch(e){
@@ -52,6 +57,7 @@ async function getData(){
 
   return {
     _tokenSupply,
+    _vTokenSupply,
     _price,
     _ldInUSD
   }
@@ -60,6 +66,7 @@ async function getData(){
 
 function Stats(props) {
   const [tokenSupply, setTokenSupply] = useState(0)
+  const [vTokenSupply, setVTokenSupply] = useState(0)
   const [price, setPrice] = useState(0)
   const [ldInUSD, setLdInUSD] = useState(0)
   const [dataLoaded, setDataLoaded] = useState(false)
@@ -70,6 +77,7 @@ function Stats(props) {
          // get data
          const {
            _tokenSupply,
+           _vTokenSupply,
            _price,
            _ldInUSD
          } = await getData()
@@ -77,6 +85,7 @@ function Stats(props) {
          // set states
          if(!isCancelled){
            setTokenSupply(_tokenSupply)
+           setVTokenSupply(_vTokenSupply)
            setPrice(_price)
            setLdInUSD(_ldInUSD)
            setDataLoaded(true)
@@ -96,7 +105,11 @@ function Stats(props) {
       (
         <Card>
         <Card.Header>
-        Token supply: { Number(Number(tokenSupply) / (10**TOKEN_DECIMALS)).toFixed(2) } {TOKEN_SYMBOL}
+        DAO supply: { Number(Number(tokenSupply) / (10**TOKEN_DECIMALS)).toFixed(2) }
+        </Card.Header>
+
+        <Card.Header>
+        vDAO supply: { Number(Number(vTokenSupply) / (10**VTOKEN_DECIMALS)).toFixed(2) }
         </Card.Header>
 
         <Card.Header>

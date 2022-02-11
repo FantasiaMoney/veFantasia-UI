@@ -13,6 +13,7 @@ export const VTokenToTokenViewHelper = "0xC58e8b040f82147eF33260bF7794BfbE03d986
 
 export const USD_DECIMALS = 18
 export const TOKEN_DECIMALS = 18
+export const VTOKEN_DECIMALS = 18
 export const CONVERT_DURATION = 31536000
 
 export const Web3Rpc = "https://data-seed-prebsc-1-s1.binance.org:8545/"

@@ -23,12 +23,14 @@ function fetchDate(unixDate){
   return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
+// helper for convert token to v token
 function withdraw(web3, accounts, _depositId, _amount){
   const converter = new web3.eth.Contract(VTokenToTokenABI, VTokenToToken)
   converter.methods.convert(accounts[0], _depositId, _amount)
   .send({ from:accounts[0] })
 }
 
+// helper for approve to burn
 function unlock(web3, accounts, _amount){
   const token = new web3.eth.Contract(VTokenAddressABI, VTokenAddress)
   token.methods.approveBurn(VTokenToToken, _amount)
@@ -43,11 +45,13 @@ async function getData(web3, accounts){
   if(web3){
     try{
       const fetchContract = new web3.eth.Contract(FetchAbi, FetchAddress)
+      const converter = new web3.eth.Contract(VTokenToTokenABI, VTokenToToken)
       totalUserDeposits = await fetchContract.methods.totalUserDeposits(accounts[0]).call()
 
       if(totalUserDeposits > 0){
         const viewHelper = new web3.eth.Contract(VTokenToTokenViewHelperABI, VTokenToTokenViewHelper)
         for(let i = 0; i < totalUserDeposits; i++){
+          // fetch data 
           const data = await fetchContract.methods.depositsPerUser(accounts[0], i).call()
           const depositedWei = await viewHelper.methods
           .calculateDeposit(data.balanceBefore, data.balanceAfter).call()
@@ -68,6 +72,14 @@ async function getData(web3, accounts){
           ? Number(fromWei(String(reedemInWei))).toFixed(8)
           : 0
 
+          // check if deposit converted
+          const used = await converter.methods.timeUsed(
+            accounts[0],
+            data.time
+          ).call()
+
+          // push only not converted deposits
+          if(!used)
           myDeposits.push(
             { ...data,
               deposited,

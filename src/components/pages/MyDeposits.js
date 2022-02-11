@@ -1,16 +1,46 @@
 import React, { useState, useEffect } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { Card, Form, Alert } from 'react-bootstrap'
+import { Card, Form, Alert, Button } from 'react-bootstrap'
 import Web3 from 'web3'
 import FetchAbi from '../../abi/FetchAbi'
+import VTokenToTokenABI from '../../abi/VTokenToTokenABI'
 import { inject, observer } from 'mobx-react'
+import { fromWei, toWei } from 'web3-utils'
 
 import {
-  FetchAddress
+  FetchAddress,
+  VTokenToToken
 } from '../../config'
 
+// helper for calculate deposit amount
+function calculateDeposit(before, after){
+  const balanceBefore = before > 0 ? fromWei(String(before)) : 0
+  const balanceAfter = after > 0 ? fromWei(String(after)) : 0
 
+  const result = balanceBefore > balanceAfter
+  ? balanceBefore - balanceAfter
+  : balanceAfter - balanceBefore
 
+  return Number(result).toFixed(6)
+}
+
+// helper for convert unix time to date
+function fetchDate(unixDate){
+  const date = new Date(unixDate * 1000)
+  return date.toLocaleDateString("en-US")
+}
+
+// helper for calculate how much user can reedem now
+async function calculateReturn(web3, startTime, amount){
+   const vTokenToToken = new web3.eth.Contract(VTokenToTokenABI, VTokenToToken)
+   const toReedem = await vTokenToToken.methods
+   .calculateReturn(startTime, toWei(String(amount)))
+   .call()
+
+   return Number(fromWei(String(toReedem))).toFixed(6)
+}
+
+// helper for load data from contracts
 async function getData(web3, accounts){
   let myDeposits = []
   let totalUserDeposits = 0
@@ -22,8 +52,16 @@ async function getData(web3, accounts){
 
       if(totalUserDeposits > 0){
         for(let i = 0; i < totalUserDeposits; i++){
+          const data = await fetchContract.methods.depositsPerUser(accounts[0], i).call()
+          const deposited = await calculateDeposit(data.balanceBefore, data.balanceAfter)
+          const depositDate = await fetchDate(data.time)
+          const toReedem = await calculateReturn(web3, data.time, toWei(String(deposited)))
+          const reedemAmount = toReedem > 0 ? Number(fromWei(String(toReedem))).toFixed(6): 0
+
+          console.log("data.balanceBefore", deposited, depositDate, reedemAmount)
+
           myDeposits.push(
-            await fetchContract.methods.depositsPerUser(accounts[0], i).call()
+            { ...data, deposited, depositDate, reedemAmount }
           )
         }
       }
@@ -87,12 +125,23 @@ function MyDeposits(props) {
                 <>
                 {
                   myDeposits.map((item, key) => {
+                    // const returnA = await calculateReturn(web3, item.time, calculateDeposit(item.balanceBefore, item.balanceAfter))
                     return (
-                      <Card key={key}>
+                      <div key={key}>
+                      <Card >
                       <Card.Header>
-                      {item.time}
+                      Deposit time {item.depositDate}
                       </Card.Header>
+                      <Card.Body>
+                      Amount : { item.deposited }
+                      <br/>
+                      To reedem : { item.reedemAmount }
+                      <br/>
+                      <Button variant="outline-primary">Reedem</Button>
+                      </Card.Body>
                       </Card>
+                      <br/>
+                      </div>
                     )
                   })
                 }

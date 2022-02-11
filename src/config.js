@@ -7,6 +7,7 @@ export const StableCoinAddress = "0x44bdc3a48677e4814e338da0361c1fffe9037d18"
 export const WethAddress = "0x1C4Ed1F3d87e5A6100cffd37b2a4E739f5b6bDD9"
 export const TreasuryAddress = "0x62B84d7C521128ADAF09591C11101Ab1a70c30a7"
 export const OHM_WETH_pair = "0xc0F59c3725755f8D583238aB4E2eD4E5B8Cc032C"
+export const VTokenToToken = "0x3EBA565ada7Dce26fD84f9c81B74E0a87Ae740E1"
 
 export const USD_DECIMALS = 18
 export const TOKEN_DECIMALS = 18

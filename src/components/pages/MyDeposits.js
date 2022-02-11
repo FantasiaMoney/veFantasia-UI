@@ -27,7 +27,7 @@ function calculateDepositWEI(balanceBefore, balanceAfter){
 // helper for convert unix time to date
 function fetchDate(unixDate){
   const date = new Date(unixDate * 1000)
-  return date.toLocaleDateString("en-US")
+  return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
 // helper for calculate how much user can reedem now
@@ -58,9 +58,8 @@ async function getData(web3, accounts){
           .calculateDeposit(data.balanceBefore, data.balanceAfter).call()
 
           const deposited = Number(fromWei(depositedWei)).toFixed(6)
-
-          console.log(deposited)
           const depositDate = await fetchDate(data.time)
+          const withdrawDate = await fetchDate(Number(data.time) + CONVERT_DURATION)
 
           const toReedem = await viewHelper.methods.calculateReturn(
              CONVERT_DURATION,
@@ -68,12 +67,10 @@ async function getData(web3, accounts){
              data.balanceBefore,
              data.balanceAfter
           ).call()
-          const reedemAmount = toReedem > 0 ? Number(fromWei(String(toReedem))).toFixed(6): 0
-
-          console.log("data.balanceBefore", deposited, depositDate, reedemAmount)
+          const reedemAmount = toReedem > 0 ? Number(fromWei(String(toReedem))).toFixed(8): 0
 
           myDeposits.push(
-            { ...data, deposited, depositDate, reedemAmount }
+            { ...data, deposited, depositDate, reedemAmount, withdrawDate }
           )
         }
       }
@@ -83,17 +80,13 @@ async function getData(web3, accounts){
     }
   }
 
-  console.log(myDeposits.length)
-  console.log(myDeposits)
-
   return myDeposits
-
 }
 
 
 function MyDeposits(props) {
   const [myDeposits, setMyDeposits] = useState([])
-  const [dataLoaded, setDataLoaded] = useState(false)
+  const [noDeposits, setNoDeposits] = useState(false)
   const web3 = props.MobXStorage.web3
   const accounts = props.MobXStorage.accounts
 
@@ -104,10 +97,11 @@ function MyDeposits(props) {
          const _myDeposits  = await getData(web3, accounts)
 
          // set states
-         if(!isCancelled){
-           console.log("Should update states", _myDeposits)
+         if(!isCancelled && web3){
            setMyDeposits(_myDeposits)
-           setDataLoaded(true)
+
+           if(_myDeposits.length === 0)
+             setNoDeposits(true)
          }
      }
      loadData()
@@ -116,76 +110,78 @@ function MyDeposits(props) {
    }
   }, [web3, accounts])
 
-  console.log("myDeposits", myDeposits, dataLoaded)
-
   return (
     <Form>
     {
-      dataLoaded
+      noDeposits
+      ?
+      (
+        <Alert variant="warning">Can not find any deposit for address {accounts[0]}</Alert>
+      )
+      :
+      null
+    }
+    <>
+    {
+      web3
       ?
       (
         <>
         {
-          web3
+          myDeposits.length > 0
           ?
           (
             <>
             {
-              myDeposits.length > 0
-              ?
-              (
-                <>
-                {
-                  myDeposits.map((item, key) => {
-                    // const returnA = await calculateReturn(web3, item.time, calculateDeposit(item.balanceBefore, item.balanceAfter))
-                    return (
-                      <div key={key}>
-                      <Card >
-                      <Card.Header>
-                      Deposit time {item.depositDate}
-                      </Card.Header>
-                      <Card.Body>
-                      Amount : { item.deposited }
-                      <br/>
-                      Current rate : { item.reedemAmount }
-                      <br/>
-                      <Button variant="outline-primary">Reedem</Button>
-                      </Card.Body>
-                      </Card>
-                      <br/>
-                      </div>
-                    )
-                  })
-                }
-                </>
-              )
-              :
-              (
-                <>No deposits </>
-              )
+              myDeposits.map((item, key) => {
+                // const returnA = await calculateReturn(web3, item.time, calculateDeposit(item.balanceBefore, item.balanceAfter))
+                return (
+                  <div key={key}>
+                  <Card >
+                  <Card.Header>
+                  Deposit time {item.depositDate}
+                  </Card.Header>
+                  <Card.Body>
+                  Deposited : { item.deposited } vDAO
+                  <hr/>
+                  Current rate : { item.deposited } = { item.reedemAmount } DAO
+                  <hr/>
+                  Current loss { Number(100 - 100 / item.deposited * item.reedemAmount).toFixed(2) } %
+                  <hr/>
+                  Exit with 1 to 1 rate will be available : {item.withdrawDate}
+                  <hr/>
+
+                  <Button variant="outline-primary">Exit</Button>
+                  </Card.Body>
+                  </Card>
+                  <br/>
+                  </div>
+                )
+              })
             }
             </>
           )
           :
           (
-            <Alert variant="warning">Please connect wallet</Alert>
+            <div align="center">
+            <CircularProgress/>
+            <br/>
+            <small>
+            <strong>
+            Load data ...
+            </strong>
+            </small>
+            </div>
           )
         }
         </>
       )
       :
       (
-        <div align="center">
-        <CircularProgress/>
-        <br/>
-        <small>
-        <strong>
-        Load data ...
-        </strong>
-        </small>
-        </div>
+        <Alert variant="warning">Please connect wallet</Alert>
       )
     }
+    </>
     </Form>
   )
 }

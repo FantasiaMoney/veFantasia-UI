@@ -21,7 +21,7 @@ import MoneyOff from '@material-ui/icons/MoneyOff'
 // components
 import Stats from '../pages/Stats'
 import Deposit from '../pages/Deposit'
-
+import MyDeposits from '../pages/MyDeposits'
 
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
@@ -85,6 +85,7 @@ export default function MainApp() {
         >
           <Tab label="Stats" icon={<ShowChart />} {...a11yProps(0)} />
           <Tab label="Deposit" icon={<Add/>} {...a11yProps(1)} />
+          <Tab label="MyDeposits" icon={<AttachMoney/>} {...a11yProps(2)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -92,6 +93,9 @@ export default function MainApp() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Deposit/>
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <MyDeposits/>
       </TabPanel>
     </div>
   );

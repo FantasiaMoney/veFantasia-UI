@@ -18,17 +18,17 @@ const FetchAbi = [
 			},
 			{
 				"internalType": "address",
-				"name": "_STABLE_COIN",
+				"name": "_sale",
 				"type": "address"
 			},
 			{
 				"internalType": "address",
-				"name": "_treasury",
+				"name": "_tokenToVToken",
 				"type": "address"
 			},
 			{
 				"internalType": "address",
-				"name": "_platformAddress",
+				"name": "_vToken",
 				"type": "address"
 			}
 		],
@@ -55,17 +55,8 @@ const FetchAbi = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "STABLE_COIN",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
+		"stateMutability": "payable",
+		"type": "fallback"
 	},
 	{
 		"inputs": [],
@@ -97,12 +88,7 @@ const FetchAbi = [
 			},
 			{
 				"internalType": "uint256",
-				"name": "ethToTreasury",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "ethToPlatform",
+				"name": "ethToSale",
 				"type": "uint256"
 			}
 		],
@@ -127,6 +113,40 @@ const FetchAbi = [
 		"name": "convertFor",
 		"outputs": [],
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "depositsPerUser",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "balanceBefore",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "balanceAfter",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -170,38 +190,12 @@ const FetchAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "percentToPlatform",
+		"name": "percentToSale",
 		"outputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "percentToTreasury",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "platformAddress",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -216,12 +210,57 @@ const FetchAbi = [
 	},
 	{
 		"inputs": [],
+		"name": "sale",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "token",
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "tokenToVToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "totalUserDeposits",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -241,8 +280,26 @@ const FetchAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_percentToDex",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_percentToSale",
+				"type": "uint256"
+			}
+		],
+		"name": "updateSplitPercent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
-		"name": "treasury",
+		"name": "vToken",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -254,37 +311,8 @@ const FetchAbi = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_platformAddress",
-				"type": "address"
-			}
-		],
-		"name": "updatePlatformAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_percentToDex",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_percentToTreasury",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_percentToPlatform",
-				"type": "uint256"
-			}
-		],
-		"name": "updateSplitPercent",
+		"inputs": [],
+		"name": "withdraw",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

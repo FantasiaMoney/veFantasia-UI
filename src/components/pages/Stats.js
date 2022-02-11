@@ -79,7 +79,7 @@ function Stats(props) {
 
          // set states
          if(!isCancelled){
-           setTokenSupply(_tokenSupply, _price)
+           setTokenSupply(_tokenSupply)
            setPrice(_price)
            setLdInUSD(_ldInUSD)
            setDataLoaded(true)

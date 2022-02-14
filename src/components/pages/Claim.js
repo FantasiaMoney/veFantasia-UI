@@ -121,7 +121,7 @@ function Claim(props) {
             <br/>
             <small>
             <strong>
-            Load data ...
+            Load claim data ...
             </strong>
             </small>
             </div>

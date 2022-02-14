@@ -51,7 +51,7 @@ async function getData(web3, accounts){
       if(totalUserDeposits > 0){
         const viewHelper = new web3.eth.Contract(VTokenToTokenViewHelperABI, VTokenToTokenViewHelper)
         for(let i = 0; i < totalUserDeposits; i++){
-          // fetch data 
+          // fetch data
           const data = await fetchContract.methods.depositsPerUser(accounts[0], i).call()
           const depositedWei = await viewHelper.methods
           .calculateDeposit(data.balanceBefore, data.balanceAfter).call()
@@ -209,7 +209,7 @@ function MyDeposits(props) {
             <br/>
             <small>
             <strong>
-            Load data ...
+            Load deposits data ...
             </strong>
             </small>
             </div>

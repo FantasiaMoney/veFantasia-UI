@@ -136,7 +136,7 @@ function Stats(props) {
         <br/>
         <small>
         <strong>
-        Load data ...
+        Load stats data ...
         </strong>
         </small>
         </div>

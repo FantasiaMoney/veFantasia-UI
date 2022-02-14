@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { Card, Form, Alert, Button } from 'react-bootstrap'
+import { Form, Alert, Button } from 'react-bootstrap'
 import WalletDestributorABI from '../../abi/WalletDestributorABI'
 import { inject, observer } from 'mobx-react'
 import { fromWei } from 'web3-utils'
 
 import {
   WalletDestributor,
-  CONVERT_DURATION,
   CURRENCY
 } from '../../config'
 
@@ -108,7 +107,11 @@ function Claim(props) {
             )
             :
             (
-              <>Need wait</>
+              <Alert variant="info">
+              <p>Claimed, next claim will open</p>
+              <hr/>
+              <p>{fetchDate(Number(periodStart) + Number(claimPeriod))}</p>
+              </Alert>
             )
           )
           :

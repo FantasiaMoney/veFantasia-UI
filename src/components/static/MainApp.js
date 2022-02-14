@@ -16,6 +16,7 @@ import {
 import AttachMoney from '@material-ui/icons/AttachMoney'
 import Add from '@material-ui/icons/Add'
 import ShowChart from '@material-ui/icons/ShowChart'
+import MoneyOff from '@material-ui/icons/MoneyOff'
 
 // components
 import Stats from '../pages/Stats'
@@ -86,7 +87,7 @@ export default function MainApp() {
           <Tab label="Stats" icon={<ShowChart />} {...a11yProps(0)} />
           <Tab label="Deposit" icon={<Add/>} {...a11yProps(1)} />
           <Tab label="MyDeposits" icon={<AttachMoney/>} {...a11yProps(2)} />
-          <Tab label="Claim" icon={<AttachMoney/>} {...a11yProps(3)} />
+          <Tab label="Claim" icon={<MoneyOff/>} {...a11yProps(3)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>

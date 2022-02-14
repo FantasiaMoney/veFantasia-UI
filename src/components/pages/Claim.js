@@ -96,7 +96,7 @@ function Claim(props) {
             ?
             (
               <>
-              <p>Earned {earned} {CURRENCY}</p>
+              <Alert variant="success">Earned {earned} {CURRENCY}</Alert>
               <Button
               variant="outline-primary"
               onClick={() => claim(web3, accounts)}

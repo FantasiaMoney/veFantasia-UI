@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { Card, Form, Alert, Button } from 'react-bootstrap'
-import FetchAbi from '../../abi/FetchAbi'
-import VTokenToTokenABI from '../../abi/VTokenToTokenABI'
-import VTokenToTokenViewHelperABI from '../../abi/VTokenToTokenViewHelperABI'
-import VTokenAddressABI from '../../abi/VTokenAddressABI'
+import WalletDestributorABI from '../../abi/WalletDestributorABI'
 import { inject, observer } from 'mobx-react'
 import { fromWei } from 'web3-utils'
 
 import {
-  FetchAddress,
-  VTokenAddress,
-  VTokenToToken,
-  VTokenToTokenViewHelper,
-  CONVERT_DURATION
+  WalletDestributor,
+  CONVERT_DURATION,
+  CURRENCY
 } from '../../config'
 
 
@@ -23,45 +18,62 @@ function fetchDate(unixDate){
   return date.toISOString().slice(0, 19).replace('T', ' ')
 }
 
+function claim(web3, accounts){
+  const destributor = new web3.eth.Contract(WalletDestributorABI, WalletDestributor)
+  destributor.methods.claim().send({ from:accounts[0] })
+}
+
 // helper for load data from contracts
 async function getData(web3, accounts){
-  let myDeposits = []
-  let totalUserDeposits = 0
+  const destributor = new web3.eth.Contract(WalletDestributorABI, WalletDestributor)
+  const _periodStart = await destributor.methods.currentPeriodStart().call()
+  const _claimPeriod = await destributor.methods.periodTime().call()
+  const currentPeriodIndex = await destributor.methods.currentPeriodIndex().call()
+  const _periodClaimed = await destributor.methods.periodClaimed(
+    accounts[0],
+    currentPeriodIndex
+  ).call()
 
-  if(web3){
-    try{
+  let _earned = await destributor.methods.earned(accounts[0]).call()
+  _earned = _earned > 0 ? fromWei(_earned) : 0
 
-    }
-    catch(e){
-      console.log("err", e)
-    }
+  return {
+    _periodStart,
+    _claimPeriod,
+    _periodClaimed,
+    _earned
   }
-
-  return myDeposits
 }
 
 
 function Claim(props) {
-  const [myDeposits, setMyDeposits] = useState([])
-  const [noDeposits, setNoDeposits] = useState(false)
+  const [periodStart, setPeriodStart] = useState(0)
+  const [claimPeriod, setClaimPeriod] = useState(0)
+  const [earned, setEarned] = useState(0)
+  const [periodClaimed, setPeriodClaimed] = useState(false)
   const web3 = props.MobXStorage.web3
   const accounts = props.MobXStorage.accounts
 
   useEffect(() => {
     let isCancelled = false
      async function loadData() {
-         // get data
-         const _myDeposits  = await getData(web3, accounts)
+       // set states
+       if(!isCancelled && web3){
+        // get data
+        const {
+          _periodStart,
+          _claimPeriod,
+          _periodClaimed,
+          _earned
+        } = await getData(web3, accounts)
 
-         // set states
-         if(!isCancelled && web3){
-           setMyDeposits(_myDeposits)
+        setPeriodStart(_periodStart)
+        setClaimPeriod(_claimPeriod)
+        setPeriodClaimed(_periodClaimed)
+        setEarned(_earned)
 
-           console.log("_myDeposits", _myDeposits)
-
-           if(_myDeposits.length === 0)
-             setNoDeposits(true)
-         }
+        console.log("_periodClaimed", _periodClaimed)
+       }
      }
      loadData()
      return () => {
@@ -78,36 +90,26 @@ function Claim(props) {
       (
         <>
         {
-          myDeposits.length > 0
+          periodStart !== 0
           ?
           (
-            <>
-            {
-              myDeposits.map((item, key) => {
-                // const returnA = await calculateReturn(web3, item.time, calculateDeposit(item.balanceBefore, item.balanceAfter))
-                return (
-                  <div key={key}>
-                  <Card >
-                  <Card.Header>
-                  Deposit time {item.depositDate}
-                  </Card.Header>
-                  <Card.Body>
-                  Deposited : { item.deposited } vDAO
-                  <hr/>
-                  Current rate : { item.deposited } = { item.reedemAmount } DAO
-                  <hr/>
-                  Current loss { Number(100 - 100 / item.deposited * item.reedemAmount).toFixed(2) } %
-                  <hr/>
-                  Exit with 1 to 1 rate will be available : {item.withdrawDate}
-                  <hr/>
-                  </Card.Body>
-                  </Card>
-                  <br/>
-                  </div>
-                )
-              })
-            }
-            </>
+            !periodClaimed
+            ?
+            (
+              <>
+              <p>Earned {earned} {CURRENCY}</p>
+              <Button
+              variant="outline-primary"
+              onClick={() => claim(web3, accounts)}
+              >
+              Claim
+              </Button>
+              </>
+            )
+            :
+            (
+              <>Need wait</>
+            )
           )
           :
           (
@@ -122,6 +124,7 @@ function Claim(props) {
             </div>
           )
         }
+
         </>
       )
       :

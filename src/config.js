@@ -1,5 +1,6 @@
 export const NetworkID = 97
 
+export const WalletDestributor = "0xad3b9bf121711C7f52F3be3562470d9e82c55D62"
 export const FetchAddress = "0x76efF446792B80198CC494A0FE76a7583F48b755"
 export const TokenAddress = "0x64Fd9b5BFcDEc6D8957D1d3D7C808F6E0084FAEa"
 export const VTokenAddress = "0x62a3202d042fE982Db44094F5207acCaB802257d"

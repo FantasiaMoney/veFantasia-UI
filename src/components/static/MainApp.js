@@ -21,6 +21,7 @@ import ShowChart from '@material-ui/icons/ShowChart'
 import Stats from '../pages/Stats'
 import Deposit from '../pages/Deposit'
 import MyDeposits from '../pages/MyDeposits'
+import Claim from '../pages/Claim'
 
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
@@ -85,6 +86,7 @@ export default function MainApp() {
           <Tab label="Stats" icon={<ShowChart />} {...a11yProps(0)} />
           <Tab label="Deposit" icon={<Add/>} {...a11yProps(1)} />
           <Tab label="MyDeposits" icon={<AttachMoney/>} {...a11yProps(2)} />
+          <Tab label="Claim" icon={<AttachMoney/>} {...a11yProps(3)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -95,6 +97,9 @@ export default function MainApp() {
       </TabPanel>
       <TabPanel value={value} index={2}>
         <MyDeposits/>
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <Claim/>
       </TabPanel>
     </div>
   );
